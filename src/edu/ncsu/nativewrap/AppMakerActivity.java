@@ -1,3 +1,33 @@
+/*
+ * Copyright (c) 2014, North Carolina State University
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of North Carolina State University nor the names of
+ * its contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+ */
+
 package edu.ncsu.nativewrap;
 
 import java.io.File;
@@ -19,7 +49,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import org.apache.commons.io.FileUtils;
-
 import pxb.android.axml.AxmlVisitor;
 import pxb.android.axml.AxmlWriter;
 import pxb.android.axml.AxmlReader;
@@ -32,13 +61,9 @@ public class AppMakerActivity extends Activity {
 	static String fromRule=null;
 	static String toRule=null;
 	static String logTag="NativeWrap";
-	//final static String packagetoReplace = "com.example.appdemo";
-	//final static String appnametoReplace = "AppDemo";
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		
 		//Getting data from the intent
 		Intent received_intent = getIntent();
 		String packagename = received_intent.getStringExtra("packagename");
@@ -57,21 +82,10 @@ public class AppMakerActivity extends Activity {
 		//Getting the default apk from assets		
 		AssetManager assetManager = getAssets();
 		try { 
-
 			String[] files = assetManager.list("/");
-			//System.out.println("STARTING PRINTING!");
-		    //for(int i=0; i<files.length; i++)
-		    //{
-		    //	System.out.println("\n File :"+i+" Name => "+files[i]);	
-		    //}
 		    InputStream fis = assetManager.open("default-app.apk");
 		    FileUtils.copyInputStreamToFile(fis, new File(getFilesDir()+"/default-app.apk"));
 		    if(fis!=null) fis.close();
-		    //Just creating a backup for the apk
-		    /*FileInputStream fis2 = new FileInputStream(new File(getFilesDir()+"/default-app.apk"));
-		      FileUtils.copyInputStreamToFile(fis2, new File(getFilesDir()+"/default-app-copy.apk"));		
-		     */
-		    //System.out.println("ENDING PRINTING!");
 		    
 		    //*****************
 		    //Extracting the AndroidManifest.xml file from the APK
@@ -87,13 +101,8 @@ public class AppMakerActivity extends Activity {
 		    byte[] fixedData =modifyAxml(orgData, packagename, appname);
 		    File manifest2 = new File(getFilesDir()+"/AndroidManifest.xml");
 		    FileUtils.writeByteArrayToFile(manifest2, fixedData);
-		    //#dev:Back up the AndroidManifest.xml to the /sdcard/ 
-		    //FileInputStream manifestinput = new FileInputStream(manifest2);
-		    //FileUtils.copyInputStreamToFile(manifestinput, new File("/sdcard/AndroidManifest.xml"));
-		    //
 		    //******************
-		    //Creating a file to hold the url and adding it to the apk
-		  
+		    //Creating a file to hold the url and adding it to the apk		  
 			File urlFile = new File(path2+"/default_url.xml");
 			//Writing the file to hold the url
 			urlFile.delete();
@@ -106,38 +115,33 @@ public class AppMakerActivity extends Activity {
 			}
 			wr.close();
 			
-			
 		    //*****************
 		    //Adding the modified AndroidManifest.xml back to the apk file
 		    File zipFile = new File(getFilesDir()+"/default-app.apk");
 		    File filearray[]=new File[2];
 		    filearray[0]=manifest2;
 		    filearray[1]=urlFile;
-		    //System.out.println("ADDING FILE:"+manifest2+ "and "+urlFile);
 		    addFilesToExistingZip(zipFile,filearray);
 		    manifest2.delete();
-		    //System.out.println("FILE ADDED");
 		    //******************
 		    //Signing the apk using zipsigner lib
 		    try {
 		        // Sign with the built-in default test key/certificate.
 		        ZipSigner zipSigner = new ZipSigner();
 		        zipSigner.setKeymode("testkey");
-		        zipSigner.signZip( getFilesDir()+"/default-app.apk", getFilesDir()+"/final.apk");
-		        		    
+		        zipSigner.signZip( getFilesDir()+"/default-app.apk", getFilesDir()+"/final.apk"); 		    
 		        //Copying to sdcard
-		       // System.out.println("Copying to STORAGE");
-		       FileInputStream fis3 = new FileInputStream(getFilesDir()+"/final.apk");
-		       //FileUtils.copyInputStreamToFile(fis3, new File(path+"/"+appname+".apk"));	
-		       FileOutputStream fos3 = openFileOutput(appname+".apk", Context.MODE_WORLD_READABLE);
-		       byte[] buf = new byte[1024];
-		       int len;
-		       while ((len = fis3.read(buf)) > 0) {
-		           fos3.write(buf, 0, len);
-		       }
+		        FileInputStream fis3 = new FileInputStream(getFilesDir()+"/final.apk");
+		        //FileUtils.copyInputStreamToFile(fis3, new File(path+"/"+appname+".apk"));	
+		        FileOutputStream fos3 = openFileOutput(appname+".apk", Context.MODE_WORLD_READABLE);
+		        byte[] buf = new byte[1024];
+		        int len;
+		        while ((len = fis3.read(buf)) > 0) {
+		        	fos3.write(buf, 0, len);
+		        }
 		        //System.out.println("Copied to STORAGE");
-		       if(fis3!=null) fis3.close();
-		       if(fos3!=null) fos3.close();
+		        if(fis3!=null) fis3.close();
+		        if(fos3!=null) fos3.close();
 		    }
 		    catch (Exception e) {
 		        Log.d(logTag,"Exception while signing or copying:"+e);
@@ -155,12 +159,8 @@ public class AppMakerActivity extends Activity {
 		    this.finish();
 		    //******************
 	    }catch (IOException e1) {
-		 
-		    // TODO Auto-generated catch block
-		 
-		    e1.printStackTrace();
-		 
-		   }
+		    e1.printStackTrace();		 
+		}
 
 	}
 		
@@ -168,253 +168,220 @@ public class AppMakerActivity extends Activity {
 	public static void addFilesToExistingZip(File zipFile,
 		 File[] files) throws IOException {
                // get a temp file
-	File tempFile = File.createTempFile(zipFile.getName(), null);
+		File tempFile = File.createTempFile(zipFile.getName(), null);
                // delete it, otherwise you cannot rename your existing zip to it.
-	tempFile.delete();
-
-	boolean renameOk=zipFile.renameTo(tempFile);
-	if (!renameOk)
-	{
-		throw new RuntimeException("could not rename the file "+zipFile.getAbsolutePath()+" to "+tempFile.getAbsolutePath());
-	}
-	byte[] buf = new byte[1024];
-	 
-	ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
-	ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-	
-	ZipEntry entry = zin.getNextEntry();
-	
-	int xmlcount=0;
-	while (entry != null) {
-		String name = entry.getName();
-		boolean notInFiles = true;
-		//System.out.println("Traversing name "+name);
-		
-		//Adding default_url.xml
-		if(name.equals("assets/default_url.xml"))
+		tempFile.delete();
+		boolean renameOk=zipFile.renameTo(tempFile);
+		if (!renameOk)
 		{
-			if(xmlcount==1)
-			{}
-			else
-			{	xmlcount=1;
-				//System.out.println("___________________Modifying content for "+name);
-				InputStream inxml = new FileInputStream(files[files.length-1]);
-				out.putNextEntry(new ZipEntry(name));
-				// Transfer bytes from the ZIP file to the output file
-				int len;
-				while ((len = inxml.read(buf)) > 0) {
-					out.write(buf, 0, len);
-				} 
-				out.closeEntry();
-			}
+			throw new RuntimeException("could not rename the file "+zipFile.getAbsolutePath()+" to "+tempFile.getAbsolutePath());
 		}
-		
-		for (File f : files) {
-			if (f.getName().equals(name) || name.equals("assets/default_url.xml")) {
-				//System.out.println("******************************************Found File "+name);				
-				notInFiles = false;
-				break;
-			}
-			
-			if (notInFiles) {
-				if(name.equals("assets/default_url.xml"))
+		byte[] buf = new byte[1024];
+	 
+		ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
+		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
+	
+		ZipEntry entry = zin.getNextEntry();
+	
+		int xmlcount=0;
+		while (entry != null) {
+			String name = entry.getName();
+			boolean notInFiles = true;
+			//Adding default_url.xml
+			if(name.equals("assets/default_url.xml"))
+			{
+				if(xmlcount==1)
 				{}
 				else
-				{	
-					try{
-					// Add ZIP entry to output stream.
+				{	xmlcount=1;
+					//System.out.println("___________________Modifying content for "+name);
+					InputStream inxml = new FileInputStream(files[files.length-1]);
 					out.putNextEntry(new ZipEntry(name));
 					// Transfer bytes from the ZIP file to the output file
 					int len;
-					while ((len = zin.read(buf)) > 0) 
-					{
+					while ((len = inxml.read(buf)) > 0) {
 						out.write(buf, 0, len);
-					}
+					} 
 					out.closeEntry();
-					}
-					catch(Exception e)
-					{}
 				}
 			}
+			for (File f : files) {
+				if (f.getName().equals(name) || name.equals("assets/default_url.xml")) {
+					//System.out.println("******************************************Found File "+name);				
+					notInFiles = false;
+					break;
+				}				
+				if (notInFiles) {
+					if(name.equals("assets/default_url.xml"))
+					{}
+					else
+					{	
+						try{
+							// Add ZIP entry to output stream.
+							out.putNextEntry(new ZipEntry(name));
+							// Transfer bytes from the ZIP file to the output file
+							int len;
+							while ((len = zin.read(buf)) > 0) 
+							{
+								out.write(buf, 0, len);
+							}
+							out.closeEntry();
+						}
+						catch(Exception e)
+						{}
+					}
+				}
+			}
+			entry = zin.getNextEntry();	
+		}	
+	
+		// Close the streams		
+		zin.close();
+		// Compress the files
+		//I added -1 to the condition so that the default_url file is not written
+		for (int i = 0; i < files.length-1; i++) {
+			InputStream in = new FileInputStream(files[i]);
+			// Add ZIP entry to output stream.
+			out.putNextEntry(new ZipEntry(files[i].getName()));
+			// Transfer bytes from the file to the ZIP file
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			// Complete the entry
+			out.closeEntry();
+			in.close();
 		}
-		entry = zin.getNextEntry();
 		
-	}	
-	
-	// Close the streams		
-	zin.close();
-	// Compress the files
-	//I added -1 to the condition so that the default_url file is not written
-	for (int i = 0; i < files.length-1; i++) {
-		InputStream in = new FileInputStream(files[i]);
-		// Add ZIP entry to output stream.
-		out.putNextEntry(new ZipEntry(files[i].getName()));
-		// Transfer bytes from the file to the ZIP file
-		int len;
-		while ((len = in.read(buf)) > 0) {
-			out.write(buf, 0, len);
-		}
-		// Complete the entry
-		out.closeEntry();
-		in.close();
-	}
-	
-	// Complete the ZIP file
-	out.close(); 
-	tempFile.delete();
+		out.close(); 
+		tempFile.delete();
 	}
 
 	//******************
 
 	  //Utility Function for modifying a binary xml
-	  public byte[] modifyAxml(byte[] orgData, final String packagename, final String appname) throws IOException {
-		    AxmlReader ar = new AxmlReader(orgData);
-		    AxmlWriter aw = new AxmlWriter();
-		    ar.accept(new AxmlVisitor(aw) {
-	
-		      @Override
-		      public NodeVisitor first(String ns, String name) {// manifest
-		    	  
-		        NodeVisitor nv = super.first(ns, name);
+	public byte[] modifyAxml(byte[] orgData, final String packagename, final String appname) throws IOException {
+	    AxmlReader ar = new AxmlReader(orgData);
+		AxmlWriter aw = new AxmlWriter();
+		ar.accept(new AxmlVisitor(aw) {	
+			@Override
+		    public NodeVisitor first(String ns, String name) {// manifest	  
+				NodeVisitor nv = super.first(ns, name);
 		        return new NodeVisitor(nv) {
-			         //Adding a permission
-		             @Override
-		             public void end() {
-		            	  //add permissions here; INTERNET is already present by default
-		            	  if(readExternal)
-		                  {
-		                      NodeVisitor read_storage = super.child(null, "uses-permission");
-		                      read_storage.attr("http://schemas.android.com/apk/res/android", "name", 0x1010003,
+		        	//Adding a permission
+		            @Override
+		            public void end() {
+		            	//add permissions here; INTERNET is already present by default
+		            	if(readExternal) {
+		            		NodeVisitor read_storage = super.child(null, "uses-permission");
+		                    read_storage.attr("http://schemas.android.com/apk/res/android", "name", 0x1010003,
 		                              TYPE_STRING, "android.permission.READ_EXTERNAL_STORAGE");
-		                  }
-		            	  if(writeExternal)
-		                  {
-		                      NodeVisitor write_storage = super.child(null, "uses-permission");
-		                      write_storage.attr("http://schemas.android.com/apk/res/android", "name", 0x1010003,
+		                }
+		            	if(writeExternal) {
+		                    NodeVisitor write_storage = super.child(null, "uses-permission");
+		                    write_storage.attr("http://schemas.android.com/apk/res/android", "name", 0x1010003,
 		                              TYPE_STRING, "android.permission.WRITE_EXTERNAL_STORAGE");
-		                  }
-		                  super.end();
+		                }
+		                super.end();
 		            }
 		        	public void attr(String ns, String name, int resourceId, int type, Object obj) {
-	                      if ((ns==null)
-	                          && name.equals("package")) {
+	                    if ((ns==null)&& name.equals("package")) {
 	                        String pname = (String) obj;
 	                        obj = pname.replace(packagetoReplace, packagename);// change packagename
 	                        //System.out.println("Package: Replacing "+packagetoReplace+" with "+packagename);
 	                        super.attr(ns, name, resourceId, type, obj);
-	                      } else {
+	                    } 
+	                    else {
 	                        super.attr(ns, name, resourceId, type, obj);
-	                      }
 	                    }
-		          @Override
-		          public NodeVisitor child(String ns, String name) {
+	                }
+		            @Override
+		            public NodeVisitor child(String ns, String name) {
 		        	// application
-		            NodeVisitor nv = super.child(ns,name);
-		            return new NodeVisitor(nv) {
-		            	
+		            	NodeVisitor nv = super.child(ns,name);
+		            	return new NodeVisitor(nv) {
+		            		
 		            	@Override
-	                    public void attr(String ns, String name, int resourceId, int type, Object obj) {
-	                      if ("http://schemas.android.com/apk/res/android".equals(ns)
-	                          && name.equals("label")) {
-	                    	try{ 
-	                    		String applicationClass = (String) obj;
-	                    		obj = applicationClass.replace(appnametoReplace, appname);// change application name
-	                    		//System.out.println("Application: Replacing "+appnametoReplace+" with "+appname);
-	                    		super.attr(ns, name, resourceId, type, obj);
+	                    	public void attr(String ns, String name, int resourceId, int type, Object obj) {
+		            			if ("http://schemas.android.com/apk/res/android".equals(ns)
+		            					&& name.equals("label")) {
+		            			try{ 
+		            				String applicationClass = (String) obj;
+		            				obj = applicationClass.replace(appnametoReplace, appname);// change application name
+		            				//System.out.println("Application: Replacing "+appnametoReplace+" with "+appname);
+		            				super.attr(ns, name, resourceId, type, obj);
+		            			}
+		            			catch(Exception e) {
+		            				Log.d(logTag,"Exception while modifying application label:"+e);
+		            			}
+		            			} else {
+		            				super.attr(ns, name, resourceId, type, obj);
+		            			}
 	                    	}
-	                    	catch(Exception e)
-	                    	{
-	                    		Log.d(logTag,"Exception while modifying application label:"+e);
-	                    	}
-	                      } else {
-	                        super.attr(ns, name, resourceId, type, obj);
-	                      }
-	                    }
-		            
-		            
-		              @Override
-		              public NodeVisitor child(String ns, String name) {// activity,receiver
-		                if (name.equals("activity")) {
-		                  //return null;// delete all activity
-		                	return new NodeVisitor(super.child(ns, name)) {
-
-			                    @Override
-			                    public void attr(String ns, String name, int resourceId, int type, Object obj) {
-			                      if ("http://schemas.android.com/apk/res/android".equals(ns)
-			                          && name.equals("label")) {
-			                    	try{ 
-			                    		String activityClass = (String) obj;
-			                    		obj = activityClass.replace(appnametoReplace, appname);// change activity class name
-			                    		//System.out.println("Activity: Replacing "+appnametoReplace+" with "+appname);
-			                    		super.attr(ns, name, resourceId, type, obj);
-			                    	}
-			                    	catch(Exception e)
-			                    	{
-			                    		Log.d(logTag,"Exception while modifying activity label:"+e);
-			                    	}
-			                      } else {
-			                        super.attr(ns, name, resourceId, type, obj);
-			                      }
-			                    }
- 
-			                  };
-		                }
+		            	@Override
+		            	public NodeVisitor child(String ns, String name) {// activity,receiver
+		            		if (name.equals("activity")) {		            		
+		            			return new NodeVisitor(super.child(ns, name)) {
+		            				@Override
+		            				public void attr(String ns, String name, int resourceId, int type, Object obj) {
+		            					if ("http://schemas.android.com/apk/res/android".equals(ns)
+		            							&& name.equals("label")) {
+		            					try{ 
+		            						String activityClass = (String) obj;
+		            						obj = activityClass.replace(appnametoReplace, appname);// change activity class name
+		            						//System.out.println("Activity: Replacing "+appnametoReplace+" with "+appname);
+		            						super.attr(ns, name, resourceId, type, obj);
+		            					}
+		            					catch(Exception e) {
+		            						Log.d(logTag,"Exception while modifying activity label:"+e);
+		            					}
+		            					} else {
+		            						super.attr(ns, name, resourceId, type, obj);
+		            					}
+		            				}
+		            			};
+		            		}
 		                
-		                if (name.equals("service")) {
-		                  return new NodeVisitor(super.child(ns, name)) {
-		                	  @Override
-			                    public void attr(String ns, String name, int resourceId, int type, Object obj) {
-			                    //System.out.println("In Service:Found attribute "+name);
-		                		  if ("http://schemas.android.com/apk/res/android".equals(ns)
-			                          && name.equals("label")){
-			                        super.attr(ns, name, resourceId, type, obj);
-		                		  }
-			                      else 
-			                    	  super.attr(ns, name, resourceId, type, obj);
-			                      
-			                    }
-		                  };
-		                }
-		                if (name.equals("receiver")) {
-			                  return new NodeVisitor(super.child(ns, name)) {
-
+		            		if (name.equals("service")) {
+		            			return new NodeVisitor(super.child(ns, name)) {
+		            				@Override
+		            				public void attr(String ns, String name, int resourceId, int type, Object obj) {
+		            					if ("http://schemas.android.com/apk/res/android".equals(ns)
+		            							&& name.equals("label")){
+		            					super.attr(ns, name, resourceId, type, obj);
+		            					}
+		            					else 
+		            						super.attr(ns, name, resourceId, type, obj);			                      
+		            				}
+		            			};
+		            		}
+		            		if (name.equals("receiver")) {
+		            			return new NodeVisitor(super.child(ns, name)) {
 			                  };
 			                }
-		                if (name.equals("provider")) {
-		                	
-		                	//return new NodeVisitor(super.child(ns, name)) {
-			                 //}; 
-			                 
-		                }
-		                return super.child(ns, name);
-		              }
+		            		if (name.equals("provider")) {
+		            		}
+		            		return super.child(ns, name);
+		            		}
+		            	}; 
+		            }	          
+		        };		        
+			}      
+		});
+		byte[] data = aw.toByteArray();
+		// save data
+        return data;
+	}
 
-		            }; 
-		          }
-		          
-		        };
-		        
-		      }
-
-		      
-		    });
-		    byte[] data = aw.toByteArray();
-		    // save data
-		    return data;
-		  }
-
-	  //Utility Function for extracting an APK 
-	  public static void extractAPK(File source, String toExtract, String destDir)
-	  {
-		  try{
-			  //System.out.println("Extracting Manifest from APK now");
-			  java.util.jar.JarFile jarfile = new java.util.jar.JarFile(source); //jar file path(here sqljdbc4.jar)
-			  java.util.Enumeration<java.util.jar.JarEntry> enu= jarfile.entries();
-			  while(enu.hasMoreElements())
-			  {
-		        String destdir = destDir;     //abc is my destination directory
+	//Utility Function for extracting an APK 
+	public static void extractAPK(File source, String toExtract, String destDir) {
+		try{
+			//System.out.println("Extracting Manifest from APK now");
+			java.util.jar.JarFile jarfile = new java.util.jar.JarFile(source); //jar file path(here sqljdbc4.jar)
+			java.util.Enumeration<java.util.jar.JarEntry> enu= jarfile.entries();
+			while(enu.hasMoreElements()) {
+				String destdir = destDir;     //abc is my destination directory
 		        java.util.jar.JarEntry je = enu.nextElement();
-
 		        //System.out.println(je.getName());
 		        if(!je.getName().equals(toExtract))
 		        	continue;
@@ -437,10 +404,10 @@ public class AppMakerActivity extends Activity {
 		        fo.close();
 		        is.close();
 			  }
-		  }
-		  catch(Exception e)
-		  {
-			  Log.d(logTag,"Exception while extracting APK"+e);
-		  }
-	  }
+		}
+		catch(Exception e)
+		{
+			Log.d(logTag,"Exception while extracting APK"+e);
+		}
+	}
 }
