@@ -6,7 +6,7 @@ NativeWrap is an Android app for creating WebView-based Android apps ad-hoc. Sha
 * Version
 v1.0
 
-* Setting up & Building NativeWrap
+### Setting up & Building NativeWrap ###
 - Clone from Bitbucket and import as an Android project in Eclipse. 
 - The WebView Container Template is available here: https://bitbucket.org/apnadkar/containerapp
 - If you make changes to the container, replace /assets/default-app.apk with ContainerApp/bin/ContainerApp.apk
