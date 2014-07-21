@@ -1,0 +1,108 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WrapMain" >
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="36dp"
+        android:gravity="left|center"
+        android:text="@string/configure"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/activity_horizontal_margin" />
+
+    <Button
+        android:id="@+id/make"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="17dp"
+        android:text="@string/makeapk" />
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textView2"
+        android:layout_marginTop="50dp"
+        android:ems="10"
+        android:text="@string/appname"
+        android:textSize="@dimen/activity_horizontal_margin" />
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/editText1"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:maxWidth="@dimen/activity_horizontal_margin"
+        android:scrollHorizontally="true"
+        android:text="@string/google"
+        android:textSize="@dimen/activity_horizontal_margin" />
+
+    <CheckBox
+        android:id="@+id/sameOrigin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editText2"
+        android:layout_marginTop="42dp"
+        android:text="@string/allowsameorigin" />
+
+    <CheckBox
+        android:id="@+id/readExternal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sameOrigin"
+        android:text="@string/readexternal" />
+
+    <CheckBox
+        android:id="@+id/writeExternal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/readExternal"
+        android:text="@string/writeexternal" />
+
+    <CheckBox
+        android:id="@+id/forceHTTPS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/writeExternal"
+        android:checked="true"
+        android:enabled="true"
+        android:text="@string/forcehttps" />
+
+    <TextView
+        android:id="@+id/fromRule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="from"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/toRule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fromRule"
+        android:layout_alignParentRight="true"
+        android:text="to"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="invisible" />
+
+</RelativeLayout>
