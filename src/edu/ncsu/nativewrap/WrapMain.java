@@ -61,6 +61,7 @@ import android.widget.TextView;
 
 
 public class WrapMain extends Activity {
+	static final String package_prefix="edu.ncsu.nativewrap.container";
 	static String logTag = "NativeWrap";
 	static String rulesetPath;
 	TextView fromRule;
@@ -91,7 +92,7 @@ public class WrapMain extends Activity {
 				countFile.createNewFile();
 				//Iterate till package does not exist, in case NativeWrap is uninstalled but the 
 				//apps it has created still exist.
-				while(packageExists("com.demoapps.adwait"+appNumber))
+				while(packageExists(package_prefix+appNumber))
 					appNumber++;
 				Writer wr = new FileWriter(countFile);
 				wr.write((appNumber)+"");
@@ -113,7 +114,7 @@ public class WrapMain extends Activity {
 				//Iterate till package does not exist, in case WrapMain is uninstalled but the 
 				//apps it has created still exist.
 				//Then incrementing it by 1 and writing it to the file again.
-				while(packageExists("com.demoapps.adwait"+appNumber))
+				while(packageExists(package_prefix+appNumber))
 					appNumber++;
 				countFile.delete();
 				countFile.createNewFile();
@@ -128,7 +129,7 @@ public class WrapMain extends Activity {
 			Log.d(logTag,"AppNumber = "+appNumber);
 		}
 		
-		final String packagename = "com.demoapps.adwait"+appNumber;
+		final String packagename = package_prefix+appNumber;
 		//When the make app button is clicked
 		final Button button = (Button) findViewById(R.id.make);
 		final EditText mEdit   = (EditText)findViewById(R.id.editText1);

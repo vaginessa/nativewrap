@@ -7,12 +7,10 @@
     <string name="download_available">An update for the HTTPSEverywhere dataset is available (~5MB)</string>
     <string name="download">Download</string>
     <string name="nothanks">Proceed without update</string>
-    <string name="check_for_updates">Checking for updates...</string>
-	<string name="downloading">Downloading...</string>
 	<string name="configure">Configure the app name and URL. The URL may change if HTTPS is forced. </string>
 	<string name="allowsameorigin">Allow WebApps with Common Origin (2nd level subdomain).</string>
-	<string name="readexternal">Allow READ_EXTERNAL_STORAGE</string>
-	<string name="writeexternal">Allow WRITE_EXTERNAL_STORAGE</string>
+	<string name="readexternal">Allow app to read from my sdcard</string>
+	<string name="writeexternal">Allow app to write to my sdcard</string>
 	<string name="appname">Enter app name here</string>
 	<string name="forcehttps">Force HTTPS</string>
 	<string name="google">https://www.google.com</string>

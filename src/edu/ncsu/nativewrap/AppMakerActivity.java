@@ -76,13 +76,11 @@ public class AppMakerActivity extends Activity {
 	    Log.d(logTag,"PackageName:Appname = "+packagename+":"+appname);
 	    
 	    //Common objects
-		File path = new File("/sdcard/");
 		File path2 = getFilesDir();
 		  
 		//Getting the default apk from assets		
 		AssetManager assetManager = getAssets();
 		try { 
-			String[] files = assetManager.list("/");
 		    InputStream fis = assetManager.open("default-app.apk");
 		    FileUtils.copyInputStreamToFile(fis, new File(getFilesDir()+"/default-app.apk"));
 		    if(fis!=null) fis.close();

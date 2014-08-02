@@ -11,6 +11,8 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="36dp"
         android:gravity="left|center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="@string/configure"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/activity_horizontal_margin" />
@@ -33,7 +35,7 @@
         android:layout_below="@+id/textView2"
         android:layout_marginTop="50dp"
         android:ems="10"
-        android:text="@string/appname"
+        android:hint="@string/appname"
         android:textSize="@dimen/activity_horizontal_margin" />
 
     <EditText
@@ -45,9 +47,9 @@
         android:layout_below="@+id/editText1"
         android:layout_marginTop="15dp"
         android:ems="10"
+        android:hint="@string/google"
         android:maxWidth="@dimen/activity_horizontal_margin"
         android:scrollHorizontally="true"
-        android:text="@string/google"
         android:textSize="@dimen/activity_horizontal_margin" />
 
     <CheckBox
