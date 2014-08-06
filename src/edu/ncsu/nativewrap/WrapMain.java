@@ -40,6 +40,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.List;
+
+import org.apache.commons.lang3.RandomStringUtils;
+
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
@@ -61,7 +65,7 @@ import android.widget.TextView;
 
 
 public class WrapMain extends Activity {
-	static final String package_prefix="edu.ncsu.nativewrap.container";
+	//static final String package_prefix="edu.ncsu.nativewrap.container";
 	static String logTag = "NativeWrap";
 	static String rulesetPath;
 	TextView fromRule;
@@ -80,6 +84,7 @@ public class WrapMain extends Activity {
 	}
     protected void onStart() {
     	super.onStart();
+    	String package_prefix="edu.ncsu.nativewrap."+RandomStringUtils.randomAlphanumeric(64)+".container";
     	rulesetPath="ruleset.xml";
     	//Strings to store the rule, in case its available.
 		String countFilePath = getFilesDir()+"/countFile.txt";
