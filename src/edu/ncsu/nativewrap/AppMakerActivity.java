@@ -32,22 +32,35 @@ package edu.ncsu.nativewrap;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import kellinwood.security.zipsigner.ZipSigner;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Bitmap.Config;
+import android.graphics.drawable.BitmapDrawable;
+
 import org.apache.commons.io.FileUtils;
 import pxb.android.axml.AxmlVisitor;
 import pxb.android.axml.AxmlWriter;
@@ -61,15 +74,19 @@ public class AppMakerActivity extends Activity {
 	static String fromRule=null;
 	static String toRule=null;
 	static String logTag="NativeWrap";
+	static boolean setFavicon=true;
+	Context context;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		context=this;
 		//Getting data from the intent
 		Intent received_intent = getIntent();
 		String packagename = received_intent.getStringExtra("packagename");
 	    String appname = received_intent.getStringExtra("appname");	
 	    readExternal=received_intent.getBooleanExtra("readExternal", false);
 	    writeExternal=received_intent.getBooleanExtra("writeExternal", false);
+	    setFavicon=received_intent.getBooleanExtra("setFavicon", true);
 	    fromRule=received_intent.getStringExtra("fromRule");
 	    toRule=received_intent.getStringExtra("toRule");
 	    Log.i(logTag, "readExternal="+readExternal+" writeExternal="+writeExternal);
@@ -113,13 +130,43 @@ public class AppMakerActivity extends Activity {
 			}
 			wr.close();
 			
+			//*****************
+			//Extracting favicons if possible
+			File iconFiles[]=null;
+			if(setFavicon)
+			{
+				try{
+					URL receivedURL = new URL(received_intent.getStringExtra("url"));
+					URL url = new URL(receivedURL.getProtocol()+"://"+receivedURL.getHost()+"/favicon.ico");
+					System.out.println("GETTING BITMAP");
+					Bitmap favicon = getBitmapFromURL(url);	
+					iconFiles = new File[4];
+					Bitmap lowDensity = convertBitmap(context, favicon, DisplayMetrics.DENSITY_LOW);
+					writeBitmapToFile(getFilesDir()+"/ic_launcher_low.png",lowDensity);
+					iconFiles[0]=new File(getFilesDir()+"/ic_launcher_low.png");
+					Bitmap mediumDensity = convertBitmap(context, favicon, DisplayMetrics.DENSITY_MEDIUM);
+					writeBitmapToFile(getFilesDir()+"/ic_launcher_medium.png",mediumDensity);
+					iconFiles[1]=new File(getFilesDir()+"/ic_launcher_medium.png");
+					Bitmap highDensity = convertBitmap(context, favicon, DisplayMetrics.DENSITY_HIGH);
+					writeBitmapToFile(getFilesDir()+"/ic_launcher_high.png",highDensity);
+					iconFiles[2]=new File(getFilesDir()+"/ic_launcher_high.png");
+					Bitmap xhighDensity = convertBitmap(context, favicon, DisplayMetrics.DENSITY_XHIGH);
+					writeBitmapToFile(getFilesDir()+"/ic_launcher_xhigh.png",xhighDensity);
+					iconFiles[3]=new File(getFilesDir()+"/ic_launcher_xhigh.png");
+				
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		
+			
 		    //*****************
 		    //Adding the modified AndroidManifest.xml back to the apk file
 		    File zipFile = new File(getFilesDir()+"/default-app.apk");
 		    File filearray[]=new File[2];
 		    filearray[0]=manifest2;
 		    filearray[1]=urlFile;
-		    addFilesToExistingZip(zipFile,filearray);
+		    addFilesToExistingZip(zipFile,filearray, iconFiles);
 		    manifest2.delete();
 		    //******************
 		    //Signing the apk using zipsigner lib
@@ -164,7 +211,7 @@ public class AppMakerActivity extends Activity {
 		
 	/*Add a certain File(s) to the archive, exactly what I want.*/
 	public static void addFilesToExistingZip(File zipFile,
-		 File[] files) throws IOException {
+		 File[] files, File[] iconFiles) throws IOException {
                // get a temp file
 		File tempFile = File.createTempFile(zipFile.getName(), null);
                // delete it, otherwise you cannot rename your existing zip to it.
@@ -182,15 +229,14 @@ public class AppMakerActivity extends Activity {
 		ZipEntry entry = zin.getNextEntry();
 	
 		int xmlcount=0;
+		boolean ldpi=false, mdpi=false, hdpi=false, xhdpi=false;
 		while (entry != null) {
 			String name = entry.getName();
 			boolean notInFiles = true;
 			//Adding default_url.xml
 			if(name.equals("assets/default_url.xml"))
 			{
-				if(xmlcount==1)
-				{}
-				else
+				if(xmlcount==0)
 				{	xmlcount=1;
 					//System.out.println("___________________Modifying content for "+name);
 					InputStream inxml = new FileInputStream(files[files.length-1]);
@@ -203,14 +249,74 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
+			else if(name.equals("res/drawable-ldpi/ic_launcher.png") && iconFiles!=null && iconFiles[0]!=null){
+				if(!ldpi){
+					ldpi=true;
+					//System.out.println("___________________Modifying content for "+name);
+					InputStream inxml = new FileInputStream(iconFiles[0]);
+					out.putNextEntry(new ZipEntry(name));
+					// Transfer bytes from the ZIP file to the output file
+					int len;
+					while ((len = inxml.read(buf)) > 0) {
+						out.write(buf, 0, len);
+					} 
+					out.closeEntry();
+				}
+			}
+			else if(name.equals("res/drawable-mdpi/ic_launcher.png") && iconFiles!=null && iconFiles[1]!=null){
+				if(!mdpi){
+					mdpi=true;
+					//System.out.println("___________________Modifying content for "+name);
+					InputStream inxml = new FileInputStream(iconFiles[1]);
+					out.putNextEntry(new ZipEntry(name));
+					// Transfer bytes from the ZIP file to the output file
+					int len;
+					while ((len = inxml.read(buf)) > 0) {
+						out.write(buf, 0, len);
+					} 
+					out.closeEntry();
+				}
+			}
+			else if(name.equals("res/drawable-hdpi/ic_launcher.png") && iconFiles!=null && iconFiles[2]!=null){
+				if(!hdpi){
+					hdpi=true;
+					//System.out.println("___________________Modifying content for "+name);
+					InputStream inxml = new FileInputStream(iconFiles[2]);
+					out.putNextEntry(new ZipEntry(name));
+					// Transfer bytes from the ZIP file to the output file
+					int len;
+					while ((len = inxml.read(buf)) > 0) {
+						out.write(buf, 0, len);
+					} 
+					out.closeEntry();
+				}
+			}
+			else if(name.equals("res/drawable-xhdpi/ic_launcher.png") && iconFiles!=null && iconFiles[3]!=null){
+				if(!xhdpi){
+					xhdpi=true;
+					//System.out.println("___________________Modifying content for "+name);
+					InputStream inxml = new FileInputStream(iconFiles[3]);
+					out.putNextEntry(new ZipEntry(name));
+					// Transfer bytes from the ZIP file to the output file
+					int len;
+					while ((len = inxml.read(buf)) > 0) {
+						out.write(buf, 0, len);
+					} 
+					out.closeEntry();
+				}
+			}
+			//If this file is not among the ones to overwrite, write it to the zip as it is.
 			for (File f : files) {
 				if (f.getName().equals(name) || name.equals("assets/default_url.xml")) {
 					//System.out.println("******************************************Found File "+name);				
 					notInFiles = false;
 					break;
-				}				
+				}
+				
 				if (notInFiles) {
 					if(name.equals("assets/default_url.xml"))
+					{}
+					else if(iconFiles!=null && (name.equals("res/drawable-ldpi/ic_launcher.png") || name.equals("res/drawable-mdpi/ic_launcher.png") ||name.equals("res/drawable-hdpi/ic_launcher.png") || name.equals("res/drawable-xhdpi/ic_launcher.png")))
 					{}
 					else
 					{	
@@ -235,7 +341,7 @@ public class AppMakerActivity extends Activity {
 	
 		// Close the streams		
 		zin.close();
-		// Compress the files
+		// Writing the AndroidManifest.xml
 		//I added -1 to the condition so that the default_url file is not written
 		for (int i = 0; i < files.length-1; i++) {
 			InputStream in = new FileInputStream(files[i]);
@@ -407,5 +513,63 @@ public class AppMakerActivity extends Activity {
 		{
 			Log.d(logTag,"Exception while extracting APK"+e);
 		}
+	}
+
+	//Extracting and formatting the favicons
+	public static Bitmap getBitmapFromURL(URL src) {
+		try {
+			URL url = src;
+	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	        connection.setDoInput(true);
+	        connection.connect();
+	        InputStream input = connection.getInputStream();
+	        Bitmap myBitmap = BitmapFactory.decodeStream(input);
+			System.out.println("GOT BITMAP:"+myBitmap.getHeight()+"|"+myBitmap.getWidth());
+	        return myBitmap;
+	    } catch (IOException e) {
+	    	e.printStackTrace();
+	        return null;
+	    }
+	}
+		
+	public static Bitmap convertBitmap(Context context, Bitmap favicon, int density){
+		Bitmap bitmap=null;
+		BitmapDrawable drawable=new BitmapDrawable(context.getResources(),favicon);
+		//drawable.setTargetDensity(density);
+		int width=0,height=0;
+		switch(density){
+		case DisplayMetrics.DENSITY_LOW:
+			width=height=32;
+			break;
+		case DisplayMetrics.DENSITY_MEDIUM:
+			width=height=48;
+			break;
+		case DisplayMetrics.DENSITY_HIGH:
+			width=height=72;
+			break;
+		case DisplayMetrics.DENSITY_XHIGH:
+			width=height=96;
+			break;
+		}
+		bitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+	    Canvas canvas = new Canvas(bitmap); 
+	    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+	    drawable.draw(canvas);
+	    System.out.println("Converted to BITMAP:"+bitmap.getHeight()+"|"+bitmap.getWidth());
+		return bitmap;
+	}
+	
+	public static void writeBitmapToFile(String path, Bitmap bitmap){
+		OutputStream stream;
+		try {
+			stream = new FileOutputStream(path);
+			bitmap.compress(CompressFormat.PNG, 100, stream);
+			stream.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 }

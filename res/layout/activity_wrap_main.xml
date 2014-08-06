@@ -17,15 +17,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/activity_horizontal_margin" />
 
-    <Button
-        android:id="@+id/make"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="17dp"
-        android:text="@string/makeapk" />
-
     <EditText
         android:id="@+id/editText1"
         android:layout_width="wrap_content"
@@ -53,15 +44,6 @@
         android:textSize="@dimen/activity_horizontal_margin" />
 
     <CheckBox
-        android:id="@+id/sameOrigin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/editText2"
-        android:layout_marginTop="42dp"
-        android:text="@string/allowsameorigin" />
-
-    <CheckBox
         android:id="@+id/readExternal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,16 +58,6 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/readExternal"
         android:text="@string/writeexternal" />
-
-    <CheckBox
-        android:id="@+id/forceHTTPS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/writeExternal"
-        android:checked="true"
-        android:enabled="true"
-        android:text="@string/forcehttps" />
 
     <TextView
         android:id="@+id/fromRule"
@@ -106,5 +78,41 @@
         android:text="to"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:visibility="invisible" />
+
+    <CheckBox
+        android:id="@+id/sameOrigin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editText2"
+        android:layout_marginTop="24dp"
+        android:text="@string/allowsameorigin" />
+
+    <CheckBox
+        android:id="@+id/favicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/writeExternal"
+        android:checked="true"
+        android:text="@string/favicons" />
+
+    <CheckBox
+        android:id="@+id/forceHTTPS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/favicon"
+        android:checked="true"
+        android:enabled="true"
+        android:text="@string/forcehttps" />
+
+    <Button
+        android:id="@+id/make"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/forceHTTPS"
+        android:layout_centerHorizontal="true"
+        android:text="@string/makeapk" />
 
 </RelativeLayout>

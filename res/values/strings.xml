@@ -14,6 +14,6 @@
 	<string name="appname">Enter app name here</string>
 	<string name="forcehttps">Force HTTPS</string>
 	<string name="google">https://www.google.com</string>
-	<string name="makeapk">Make APK</string>
-	
+	<string name="makeapk">Make APK</string> 
+	<string name="favicons">Set the favicon as the app\'s icon if available</string>
 </resources>

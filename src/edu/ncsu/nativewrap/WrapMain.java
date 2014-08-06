@@ -68,6 +68,7 @@ public class WrapMain extends Activity {
 	TextView toRule;
 	CheckBox forceHTTPS;
 	EditText URLEdit;
+	CheckBox favicon;
 	@Override
 	public void onBackPressed() {
 	    moveTaskToBack(true);
@@ -133,19 +134,16 @@ public class WrapMain extends Activity {
 		//When the make app button is clicked
 		final Button button = (Button) findViewById(R.id.make);
 		final EditText mEdit   = (EditText)findViewById(R.id.editText1);
-		//final EditText URLEdit = (EditText)findViewById(R.id.editText2);
 		final CheckBox SameOriginCheck = (CheckBox)findViewById(R.id.sameOrigin);
-		//final CheckBox forceHTTPS=(CheckBox)findViewById(R.id.forceHTTPS);
 		final CheckBox readExternalCheck=(CheckBox)findViewById(R.id.readExternal);
 		final CheckBox writeExternalCheck=(CheckBox)findViewById(R.id.writeExternal);
-		//final TextView fromRule=(TextView)findViewById(R.id.fromRule);
-		//final TextView toRule=(TextView)findViewById(R.id.toRule);
 		final Context context=getApplicationContext();
 		fromRule=(TextView)findViewById(R.id.fromRule);
 		toRule=(TextView)findViewById(R.id.toRule);
 		forceHTTPS=(CheckBox)findViewById(R.id.forceHTTPS);
 		URLEdit = (EditText)findViewById(R.id.editText2);
 		forceHTTPS.setVisibility(View.INVISIBLE);
+		favicon = (CheckBox)findViewById(R.id.favicon);
 		
 		Intent intent=getIntent();
 		
@@ -185,12 +183,15 @@ public class WrapMain extends Activity {
                 boolean sameOrigin=false;
                 boolean readExternal=false;
                 boolean writeExternal=false;
+                boolean setFavicon=false;
                 if (SameOriginCheck.isChecked())
                 	sameOrigin=true;
                 if(readExternalCheck.isChecked())
                 	readExternal=true;
                 if(writeExternalCheck.isChecked())
                 	writeExternal=true;
+                if(favicon.isChecked())
+                	setFavicon=true;
                 if(appname==null || appname.equals(""))
                 {
                 	appname = packagename;
@@ -208,6 +209,7 @@ public class WrapMain extends Activity {
                 explicitIntent.putExtra("sameorigin", sameOrigin); 
                 explicitIntent.putExtra("readExternal", readExternal);
                 explicitIntent.putExtra("writeExternal", writeExternal);
+                explicitIntent.putExtra("setFavicon", setFavicon);
                 String fromRuleText = ""+ fromRule.getText();
                 String toRuleText = "" + toRule.getText();
                 if(!fromRuleText.equals("from"))
