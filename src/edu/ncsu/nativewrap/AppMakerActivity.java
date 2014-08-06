@@ -50,6 +50,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.widget.Toast;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -156,6 +157,8 @@ public class AppMakerActivity extends Activity {
 				
 				} catch (Exception e) {
 					e.printStackTrace();
+					Toast nofavicon = Toast.makeText(context, "No Favicon Found for domain, selecting default icon.", Toast.LENGTH_LONG);
+					nofavicon.show();
 				}
 			}
 		
@@ -516,8 +519,7 @@ public class AppMakerActivity extends Activity {
 	}
 
 	//Extracting and formatting the favicons
-	public static Bitmap getBitmapFromURL(URL src) {
-		try {
+	public static Bitmap getBitmapFromURL(URL src) throws Exception {
 			URL url = src;
 	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 	        connection.setDoInput(true);
@@ -526,10 +528,6 @@ public class AppMakerActivity extends Activity {
 	        Bitmap myBitmap = BitmapFactory.decodeStream(input);
 			System.out.println("GOT BITMAP:"+myBitmap.getHeight()+"|"+myBitmap.getWidth());
 	        return myBitmap;
-	    } catch (IOException e) {
-	    	e.printStackTrace();
-	        return null;
-	    }
 	}
 		
 	public static Bitmap convertBitmap(Context context, Bitmap favicon, int density){
