@@ -92,7 +92,7 @@ public class URLRuleMatcher extends DefaultHandler{
      		   resultURLString=null;
      	   }
      	   else
-     	   {
+     	   {	
      		   resultURLString=e.newURLString();
      		   ruleTo=e.ruleTo();
      		   ruleFrom=e.ruleFrom();

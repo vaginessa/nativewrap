@@ -39,7 +39,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.net.URL;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -307,8 +310,20 @@ public class WrapMain extends Activity {
 	        if (progress.isShowing()) {
 	        	progress.dismiss();
 	        }
-	        if(match)
-	        	WrapMain.this.setRuleText(urlEdit, fromRule, toRule);
+	        if(match){
+	        	try{
+	        		//try connecting to the replaced URL
+	        		URL url = new URL(urlEdit);
+	        		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+	        		urlConnection.connect();
+	        		WrapMain.this.setRuleText(urlEdit, fromRule, toRule);
+	        		urlConnection.disconnect();
+	        	}
+	        	catch(Exception e){
+	        		Log.d(logTag,"Inaccessible replacement URL. Do nothing.");
+	        		//do nothing
+	        	}
+	        }
 	    }
 	}
 }
