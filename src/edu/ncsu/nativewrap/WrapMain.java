@@ -129,7 +129,9 @@ public class WrapMain extends Activity {
 				if(wr!=null) wr.close();
 			} 
 			catch (IOException e) {
-				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (Exception e){
 				e.printStackTrace();
 			}
 			Log.d(logTag,"AppNumber = "+appNumber);
