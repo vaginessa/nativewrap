@@ -157,7 +157,7 @@ public class AppMakerActivity extends Activity {
 				
 				} catch (Exception e) {
 					e.printStackTrace();
-					Toast nofavicon = Toast.makeText(context, "No Favicon Found for domain, selecting default icon.", Toast.LENGTH_LONG);
+					Toast nofavicon = Toast.makeText(context, "No Favicon Found at this time, selecting default icon.", Toast.LENGTH_LONG);
 					nofavicon.show();
 				}
 			}
