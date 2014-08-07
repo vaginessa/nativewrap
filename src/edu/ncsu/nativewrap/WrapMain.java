@@ -87,7 +87,7 @@ public class WrapMain extends Activity {
 	}
     protected void onStart() {
     	super.onStart();
-    	String package_prefix="edu.ncsu.nativewrap."+RandomStringUtils.randomAlphanumeric(64)+".container";
+    	String package_prefix="edu.ncsu.nativewrap"+RandomStringUtils.randomAlphabetic(64)+"container";
     	rulesetPath="ruleset.xml";
     	//Strings to store the rule, in case its available.
 		String countFilePath = getFilesDir()+"/countFile.txt";
