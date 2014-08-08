@@ -75,7 +75,7 @@ public class AppMakerActivity extends Activity {
 	static String toRule=null;
 	static String logTag="NativeWrap";
 	static boolean setFavicon=true;
-	Context context;
+	static Context context;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -225,7 +225,7 @@ public class AppMakerActivity extends Activity {
 	public static void addFilesToExistingZip(File zipFile,
 		 File[] files, File[] iconFiles) throws IOException {
                // get a temp file
-		File tempFile = File.createTempFile(zipFile.getName(), null);
+		File tempFile = File.createTempFile(zipFile.getName(), null, context.getCacheDir());
                // delete it, otherwise you cannot rename your existing zip to it.
 		tempFile.delete();
 		boolean renameOk=zipFile.renameTo(tempFile);
