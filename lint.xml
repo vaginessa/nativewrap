@@ -3,6 +3,9 @@
     <issue id="NewApi">
         <ignore path="src/com/adwaitnadkarni/projects/wrapapp/WrapMain.java" />
     </issue>
+    <issue id="TrulyRandom">
+        <ignore path="src/edu/ncsu/nativewrap/AppMakerActivity.java" />
+    </issue>
     <issue id="WorldReadableFiles">
         <ignore path="src/edu/ncsu/nativewrap/AppMakerActivity.java" />
     </issue>

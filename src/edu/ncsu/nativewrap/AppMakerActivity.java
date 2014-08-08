@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -61,11 +60,11 @@ import android.graphics.Canvas;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
-
 import org.apache.commons.io.FileUtils;
 import pxb.android.axml.AxmlVisitor;
 import pxb.android.axml.AxmlWriter;
 import pxb.android.axml.AxmlReader;
+import kellinwood.security.zipsigner.optional.*;
 
 public class AppMakerActivity extends Activity {
 	final static String packagetoReplace = "com.example.containerapp";
@@ -92,7 +91,6 @@ public class AppMakerActivity extends Activity {
 	    toRule=received_intent.getStringExtra("toRule");
 	    Log.i(logTag, "readExternal="+readExternal+" writeExternal="+writeExternal);
 	    Log.d(logTag,"PackageName:Appname = "+packagename+":"+appname);
-	    
 	    //Common objects
 		File path2 = getFilesDir();
 		  
@@ -172,15 +170,26 @@ public class AppMakerActivity extends Activity {
 		    addFilesToExistingZip(zipFile,filearray, iconFiles);
 		    manifest2.delete();
 		    //******************
-		    //Signing the apk using zipsigner lib
 		    try {
-		        // Sign with the built-in default test key/certificate.
-		        ZipSigner zipSigner = new ZipSigner();
-		        zipSigner.setKeymode("testkey");
-		        zipSigner.signZip( getFilesDir()+"/default-app.apk", getFilesDir()+"/final.apk"); 		    
-		        //Copying to sdcard
+	    		//Sign the app with the available keystore
+		        String storepath=getFilesDir()+"/tempkeystore";
+		        String pass="";
+		        char[] randomPass=pass.toCharArray();
+		        String keyname="tempkey";
+		        //Signing the apk using zipsigner lib
+		    	ZipSigner zipSigner = new ZipSigner();
+		    	try{
+		    		CustomKeySigner.signZip(zipSigner, storepath, randomPass, keyname, randomPass, 
+		    				"SHA1withRSA", getFilesDir()+"/default-app.apk", getFilesDir()+"/final.apk");
+		    	}
+		    	catch(Exception e){
+		    		Log.w(logTag,"Could not sign with device specific key. Signing with test key instead");
+		    		zipSigner = new ZipSigner();
+		    		zipSigner.setKeymode("testkey");
+		    		zipSigner.signZip(getFilesDir()+"/default-app.apk", getFilesDir()+"/final.apk");	    		
+		    	}
+		        //Making a copy
 		        FileInputStream fis3 = new FileInputStream(getFilesDir()+"/final.apk");
-		        //FileUtils.copyInputStreamToFile(fis3, new File(path+"/"+appname+".apk"));	
 		        FileOutputStream fos3 = openFileOutput(appname+".apk", Context.MODE_WORLD_READABLE);
 		        byte[] buf = new byte[1024];
 		        int len;
@@ -366,7 +375,7 @@ public class AppMakerActivity extends Activity {
 
 	//******************
 
-	  //Utility Function for modifying a binary xml
+	//Utility Function for modifying a binary xml
 	public byte[] modifyAxml(byte[] orgData, final String packagename, final String appname) throws IOException {
 	    AxmlReader ar = new AxmlReader(orgData);
 		AxmlWriter aw = new AxmlWriter();

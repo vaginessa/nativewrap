@@ -150,8 +150,6 @@ public class Activity_1 extends Activity {
 	
 	private class CheckUpdate extends AsyncTask<Void, Void, Void> {
 	    private ProgressDialog updatedialog;
-	    private AlertDialog.Builder alertDialogBuilder;
-	    private AlertDialog alert;
 	    private boolean abort=false;
 	    @Override
 	    protected void onPreExecute() {
@@ -266,8 +264,7 @@ public class Activity_1 extends Activity {
 	    protected Void doInBackground(Void... arg0) {		
 			final String new_ruleset_xml_path=getFilesDir()+"new_ruleset.xml";
 	  	    if(!downloadFile(ruleset_link, new_ruleset_xml_path)){
-    	    	//forwardIntent(getIntent());
-	  	    	Toast toast = Toast.makeText(context, "Download Failed! Aborting.", Toast.LENGTH_SHORT);
+    	    	Toast.makeText(context, "Download Failed! Aborting.", Toast.LENGTH_SHORT).show();
 	  	    	return null;
     	    }
     	    //replace old files with new

@@ -41,18 +41,15 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URL;
 import java.util.List;
-
 import javax.net.ssl.HttpsURLConnection;
-
+import kellinwood.security.zipsigner.optional.CertCreator;
+import kellinwood.security.zipsigner.optional.DistinguishedNameValues;
 import org.apache.commons.lang3.RandomStringUtils;
-
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -65,8 +62,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
-
-
 public class WrapMain extends Activity {
 	//static final String package_prefix="edu.ncsu.nativewrap.container";
 	static String logTag = "NativeWrap";
@@ -75,7 +70,8 @@ public class WrapMain extends Activity {
 	TextView toRule;
 	CheckBox forceHTTPS;
 	EditText URLEdit;
-	CheckBox favicon;
+	CheckBox favicon;	
+	
 	@Override
 	public void onBackPressed() {
 	    moveTaskToBack(true);
@@ -89,10 +85,24 @@ public class WrapMain extends Activity {
     	super.onStart();
     	String package_prefix="edu.ncsu.nativewrap"+RandomStringUtils.randomAlphabetic(64)+"container";
     	rulesetPath="ruleset.xml";
-    	//Strings to store the rule, in case its available.
-		String countFilePath = getFilesDir()+"/countFile.txt";
+    	
+		//Initialize a new keystore with a signing key for this device.
+        String storepath=getFilesDir()+"/tempkeystore";
+        File storepathfile = new File(storepath);
+        if(!storepathfile.isFile()){
+        	String pass="";
+        	char[] tempPass=pass.toCharArray();
+        	String keyname="tempkey";
+        	DistinguishedNameValues ds = new DistinguishedNameValues();
+        	ds.setCommonName("NativeWrap Wrapper");
+        	CertCreator.createKeystoreAndKey(storepath,tempPass,
+        			"RSA", 2048, keyname, tempPass,"SHA1withRSA", 30, ds);
+        }
+		//
+		
 		//Getting the count of wrapped packages installed.
-		File countFile = new File(countFilePath);
+    	String countFilePath = getFilesDir()+"/countFile.txt";
+        File countFile = new File(countFilePath);
 		int appNumber = 0;
 		if(!countFile.isFile())
 		{	
@@ -147,7 +157,6 @@ public class WrapMain extends Activity {
 		final CheckBox SameOriginCheck = (CheckBox)findViewById(R.id.sameOrigin);
 		final CheckBox readExternalCheck=(CheckBox)findViewById(R.id.readExternal);
 		final CheckBox writeExternalCheck=(CheckBox)findViewById(R.id.writeExternal);
-		final Context context=getApplicationContext();
 		fromRule=(TextView)findViewById(R.id.fromRule);
 		toRule=(TextView)findViewById(R.id.toRule);
 		forceHTTPS=(CheckBox)findViewById(R.id.forceHTTPS);
@@ -265,7 +274,7 @@ public class WrapMain extends Activity {
 		this.forceHTTPS.setVisibility(View.VISIBLE);
 		//Log.d(logTag, "Rule from:"+fromRule+"| to:"+toRule+"| url:"+urlEdit);
 	}
-	
+
 	private class HTTPSEverywhereMatch extends AsyncTask<Void, Void, Void> {
     	private ProgressDialog progress;
     	private boolean match;
