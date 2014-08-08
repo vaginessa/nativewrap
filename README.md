@@ -2,7 +2,7 @@
 
 * Summary- NativeWrap is an Android app for creating WebView-based Android apps ad-hoc. Share a URL with NativeWrap, configure the target app (i.e. with the App name, final URL, security settings, etc.), and NativeWrap will build and install the target apk. 
 
-* Version- v1.0
+* Version- v1.11
 
 ### Setting up & Building NativeWrap ###
 - Clone from Bitbucket and import as an Android project in Eclipse. 
