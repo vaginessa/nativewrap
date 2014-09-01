@@ -50,6 +50,7 @@ import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -61,6 +62,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class WrapMain extends Activity {
 	//static final String package_prefix="edu.ncsu.nativewrap.container";
@@ -70,7 +72,8 @@ public class WrapMain extends Activity {
 	TextView toRule;
 	CheckBox forceHTTPS;
 	EditText URLEdit;
-	CheckBox favicon;	
+	CheckBox favicon;
+	static Context context= null;
 	
 	@Override
 	public void onBackPressed() {
@@ -79,7 +82,8 @@ public class WrapMain extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_wrap_main);		
+		setContentView(R.layout.activity_wrap_main);	
+		context=this;
 	}
     protected void onStart() {
     	super.onStart();
@@ -95,8 +99,13 @@ public class WrapMain extends Activity {
         	String keyname="tempkey";
         	DistinguishedNameValues ds = new DistinguishedNameValues();
         	ds.setCommonName("NativeWrap Wrapper");
-        	CertCreator.createKeystoreAndKey(storepath,tempPass,
+        	try{
+        		CertCreator.createKeystoreAndKey(storepath,tempPass,
         			"RSA", 2048, keyname, tempPass,"SHA1withRSA", 30, ds);
+        	}
+        	catch(Exception e){
+        		e.printStackTrace();
+        	}
         }
 		//
 		
