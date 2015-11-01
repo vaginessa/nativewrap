@@ -63,6 +63,22 @@
         android:layout_below="@+id/readExternal"
         android:text="@string/writeexternal" />
 
+    <CheckBox
+        android:id="@+id/locationAccess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/writeExternal"
+        android:text="@string/locationaccess" />
+
+    <CheckBox
+        android:id="@+id/isFullScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/locationAccess"
+        android:text="@string/fullscreenapp" />
+
     <TextView
         android:id="@+id/fromRule"
         android:layout_width="wrap_content"
@@ -97,7 +113,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/writeExternal"
+        android:layout_below="@+id/isFullScreen"
         android:checked="true"
         android:text="@string/favicons" />
 

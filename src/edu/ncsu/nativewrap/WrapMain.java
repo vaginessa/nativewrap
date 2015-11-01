@@ -166,6 +166,8 @@ public class WrapMain extends Activity {
 		final CheckBox SameOriginCheck = (CheckBox)findViewById(R.id.sameOrigin);
 		final CheckBox readExternalCheck=(CheckBox)findViewById(R.id.readExternal);
 		final CheckBox writeExternalCheck=(CheckBox)findViewById(R.id.writeExternal);
+		final CheckBox locationAccessCheck=(CheckBox)findViewById(R.id.locationAccess);
+		final CheckBox isFullScreenCheck=(CheckBox)findViewById(R.id.isFullScreen);
 		fromRule=(TextView)findViewById(R.id.fromRule);
 		toRule=(TextView)findViewById(R.id.toRule);
 		forceHTTPS=(CheckBox)findViewById(R.id.forceHTTPS);
@@ -211,6 +213,8 @@ public class WrapMain extends Activity {
                 boolean sameOrigin=false;
                 boolean readExternal=false;
                 boolean writeExternal=false;
+				boolean locationAccess = false;
+				boolean isFullScreen = false;
                 boolean setFavicon=false;
                 if (SameOriginCheck.isChecked())
                 	sameOrigin=true;
@@ -218,6 +222,11 @@ public class WrapMain extends Activity {
                 	readExternal=true;
                 if(writeExternalCheck.isChecked())
                 	writeExternal=true;
+				if(locationAccessCheck.isChecked())
+					locationAccess = true;
+				if(isFullScreenCheck.isChecked()){
+					isFullScreen = true;
+				}
                 if(favicon.isChecked())
                 	setFavicon=true;
                 if(appname==null || appname.equals(""))
@@ -237,6 +246,8 @@ public class WrapMain extends Activity {
                 explicitIntent.putExtra("sameorigin", sameOrigin); 
                 explicitIntent.putExtra("readExternal", readExternal);
                 explicitIntent.putExtra("writeExternal", writeExternal);
+				explicitIntent.putExtra("locationAccess", locationAccess);
+				explicitIntent.putExtra("isFullScreen", isFullScreen);
                 explicitIntent.putExtra("setFavicon", setFavicon);
                 String fromRuleText = ""+ fromRule.getText();
                 String toRuleText = "" + toRule.getText();
@@ -244,7 +255,7 @@ public class WrapMain extends Activity {
                 	explicitIntent.putExtra("fromRule", fromRuleText);
                 if(!toRuleText.equals("to"))
                 	explicitIntent.putExtra("to", toRuleText);
-                Log.d(logTag,"Appname ="+appname+" Packagename="+packagename+" URL="+url+" readExt="+readExternal +" writeExt="+writeExternal);
+                Log.d(logTag,"Appname ="+appname+" Packagename="+packagename+" URL="+url+" readExt="+readExternal +" writeExt="+writeExternal+" locationaccess="+locationAccess);
                 startActivity(explicitIntent);   
             }
         });

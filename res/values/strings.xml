@@ -11,6 +11,8 @@
 	<string name="allowsameorigin">Allow WebApps with Common Origin (2nd level subdomain).</string>
 	<string name="readexternal">Allow app to read from my sdcard</string>
 	<string name="writeexternal">Allow app to write to my sdcard</string>
+	<string name="locationaccess">Allow app to access location data</string>
+	<string name="fullscreenapp">Use app in fullscreen mode</string>
 	<string name="appname">Enter app name here</string>
 	<string name="forcehttps">Force HTTPS</string>
 	<string name="google">https://www.google.com</string>

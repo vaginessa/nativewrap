@@ -71,6 +71,8 @@ public class AppMakerActivity extends Activity {
 	final static String appnametoReplace = "ContainerApp";
 	static boolean readExternal=false;
 	static boolean writeExternal=false;
+	static boolean locationAccess = false;
+	static boolean isFullScreen = false;
 	static String fromRule=null;
 	static String toRule=null;
 	static String logTag="NativeWrap";
@@ -86,21 +88,23 @@ public class AppMakerActivity extends Activity {
 	    String appname = received_intent.getStringExtra("appname");	
 	    readExternal=received_intent.getBooleanExtra("readExternal", false);
 	    writeExternal=received_intent.getBooleanExtra("writeExternal", false);
+		locationAccess  = received_intent.getBooleanExtra("locationAccess" , false);
+		isFullScreen = received_intent.getBooleanExtra("isFullScreen", false);
 	    setFavicon=received_intent.getBooleanExtra("setFavicon", true);
 	    fromRule=received_intent.getStringExtra("fromRule");
 	    toRule=received_intent.getStringExtra("toRule");
-	    Log.i(logTag, "readExternal="+readExternal+" writeExternal="+writeExternal);
-	    Log.d(logTag,"PackageName:Appname = "+packagename+":"+appname);
+	    Log.i(logTag, "readExternal="+readExternal+" writeExternal="+writeExternal+ " access location="+locationAccess + " fullscreen=" + isFullScreen);
+	    Log.d(logTag, "PackageName:Appname = " + packagename + ":" + appname);
 	    //Common objects
 		File path2 = getFilesDir();
-		  
+
 		//Getting the default apk from assets		
 		AssetManager assetManager = getAssets();
 		try { 
 		    InputStream fis = assetManager.open("default-app.apk");
 		    FileUtils.copyInputStreamToFile(fis, new File(getFilesDir()+"/default-app.apk"));
 		    if(fis!=null) fis.close();
-		    
+
 		    //*****************
 		    //Extracting the AndroidManifest.xml file from the APK
 		    extractAPK(new File(getFilesDir()+"/default-app.apk"), "AndroidManifest.xml", getFilesDir()+"/");
@@ -124,6 +128,7 @@ public class AppMakerActivity extends Activity {
 			Writer wr = new FileWriter(urlFile);
 			wr.write(received_intent.getStringExtra("url"));
 			wr.write("\n"+received_intent.getBooleanExtra("sameorigin",false));
+			wr.write("\n" + isFullScreen);
 			if(fromRule!=null&&toRule!=null){
 				wr.write("\n"+fromRule+"\n"+toRule);
 			}
@@ -244,6 +249,7 @@ public class AppMakerActivity extends Activity {
 		boolean ldpi=false, mdpi=false, hdpi=false, xhdpi=false;
 		while (entry != null) {
 			String name = entry.getName();
+			System.out.println("entry name : " + name);
 			boolean notInFiles = true;
 			//Adding default_url.xml
 			if(name.equals("assets/default_url.xml"))
@@ -261,7 +267,7 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
-			else if(name.equals("res/drawable-ldpi/ic_launcher.png") && iconFiles!=null && iconFiles[0]!=null){
+			else if(name.contains("res/drawable-ldpi") && name.contains("/ic_launcher.png") && iconFiles!=null && iconFiles[0]!=null){
 				if(!ldpi){
 					ldpi=true;
 					//System.out.println("___________________Modifying content for "+name);
@@ -275,7 +281,7 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
-			else if(name.equals("res/drawable-mdpi/ic_launcher.png") && iconFiles!=null && iconFiles[1]!=null){
+			else if(name.contains("res/drawable-mdpi") && name.contains("/ic_launcher.png") && iconFiles!=null && iconFiles[1]!=null){
 				if(!mdpi){
 					mdpi=true;
 					//System.out.println("___________________Modifying content for "+name);
@@ -289,7 +295,7 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
-			else if(name.equals("res/drawable-hdpi/ic_launcher.png") && iconFiles!=null && iconFiles[2]!=null){
+			else if(name.contains("res/drawable-hdpi") && name.contains("/ic_launcher.png") && iconFiles!=null && iconFiles[2]!=null){
 				if(!hdpi){
 					hdpi=true;
 					//System.out.println("___________________Modifying content for "+name);
@@ -303,7 +309,7 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
-			else if(name.equals("res/drawable-xhdpi/ic_launcher.png") && iconFiles!=null && iconFiles[3]!=null){
+			else if(name.equals("res/drawable-xhdpi") && name.contains("/ic_launcher.png") && iconFiles!=null && iconFiles[3]!=null){
 				if(!xhdpi){
 					xhdpi=true;
 					//System.out.println("___________________Modifying content for "+name);
@@ -320,7 +326,7 @@ public class AppMakerActivity extends Activity {
 			//If this file is not among the ones to overwrite, write it to the zip as it is.
 			for (File f : files) {
 				if (f.getName().equals(name) || name.equals("assets/default_url.xml")) {
-					//System.out.println("******************************************Found File "+name);				
+					//System.out.println("******************************************Found File "+name);
 					notInFiles = false;
 					break;
 				}
@@ -398,6 +404,11 @@ public class AppMakerActivity extends Activity {
 		                    write_storage.attr("http://schemas.android.com/apk/res/android", "name", 0x1010003,
 		                              TYPE_STRING, "android.permission.WRITE_EXTERNAL_STORAGE");
 		                }
+						if(locationAccess) {
+							NodeVisitor location_access = super.child(null, "uses-permission");
+							location_access.attr("http://schemas.android.com/apk/res/android", "name", 0x1010003,
+									TYPE_STRING, "android.permission.ACCESS_FINE_LOCATION");
+						}
 		                super.end();
 		            }
 		        	public void attr(String ns, String name, int resourceId, int type, Object obj) {
@@ -572,7 +583,9 @@ public class AppMakerActivity extends Activity {
 			stream = new FileOutputStream(path);
 			bitmap.compress(CompressFormat.PNG, 100, stream);
 			stream.close();
+			//System.out.println("******* write to file complete ********" + path);
 		} catch (FileNotFoundException e) {
+			System.out.println("could not write to file!!!!");
 			e.printStackTrace();
 		}
 		catch (IOException e) {
