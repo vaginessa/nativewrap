@@ -33,6 +33,8 @@ package edu.ncsu.nativewrap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.regex.Pattern;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -132,6 +134,14 @@ public class URLRuleMatcher extends DefaultHandler{
 			{
 				//System.out.println("No Host Match");
 			}		
+		}else if(qName.equalsIgnoreCase("exclusion") && hostMatched){
+			String regexString = attributes.getValue("pattern");
+			System.out.println("exclusion pattern : " + regexString + " for host : " + targetURLString);
+			Pattern exclusionPattern = Pattern.compile(regexString);
+			if(targetURLString.matches(regexString)) {
+				//System.out.println("******exlcusion pattern matched**********");
+				hostMatched=false;
+			}
 		}
 		else if(qName.equalsIgnoreCase("rule"))
 		{
