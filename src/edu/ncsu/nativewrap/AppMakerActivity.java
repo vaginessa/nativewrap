@@ -267,7 +267,7 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
-			else if(name.contains("res/drawable-ldpi") && name.contains("/ic_launcher.png") && iconFiles!=null && iconFiles[0]!=null){
+			else if(name.equals("res/drawable-ldpi/ic_launcher.png") && iconFiles!=null && iconFiles[0]!=null){
 				if(!ldpi){
 					ldpi=true;
 					//System.out.println("___________________Modifying content for "+name);
@@ -281,7 +281,7 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
-			else if(name.contains("res/drawable-mdpi") && name.contains("/ic_launcher.png") && iconFiles!=null && iconFiles[1]!=null){
+			else if(name.equals("res/drawable-mdpi/ic_launcher.png") && iconFiles!=null && iconFiles[1]!=null){
 				if(!mdpi){
 					mdpi=true;
 					//System.out.println("___________________Modifying content for "+name);
@@ -295,7 +295,7 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
-			else if(name.contains("res/drawable-hdpi") && name.contains("/ic_launcher.png") && iconFiles!=null && iconFiles[2]!=null){
+			else if(name.equals("res/drawable-hdpi/ic_launcher.png") && iconFiles!=null && iconFiles[2]!=null){
 				if(!hdpi){
 					hdpi=true;
 					//System.out.println("___________________Modifying content for "+name);
@@ -309,7 +309,7 @@ public class AppMakerActivity extends Activity {
 					out.closeEntry();
 				}
 			}
-			else if(name.equals("res/drawable-xhdpi") && name.contains("/ic_launcher.png") && iconFiles!=null && iconFiles[3]!=null){
+			else if(name.equals("res/drawable-xhdpi/ic_launcher.png") && iconFiles!=null && iconFiles[3]!=null){
 				if(!xhdpi){
 					xhdpi=true;
 					//System.out.println("___________________Modifying content for "+name);
